@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listagem de Utilizadores</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <style>
+        body { background-color: #f8f9fa; }
+        .btn-primary-custom { background-color: #002b5c; border: none; }
+        .btn-primary-custom:hover { background-color: #001f42; }
+        .badge-active { background-color: #28a745; }
+        .badge-inactive { background-color: #dc3545; }
+        .table th { font-weight: 600; }
+        .toast-custom {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #002b5c;
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .toast-custom.show { opacity: 1; }
+    </style>
+</head>
+
+<body>
+
+<div class="container my-5">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">Listagem de Utilizadores</h2>
+            <p class="text-muted mb-0">Gestão completa dos utilizadores da plataforma</p>
+        </div>
+        <a href="Backoffice.html" class="btn btn-secondary btn-sm">
+            ← Voltar ao Backoffice
+        </a>
+    </div>
+
+    <!-- Add button -->
+    <div class="mb-4">
+        <button class="btn btn-primary-custom text-white w-100 py-2" onclick="abrirModalAdicionar()">
+            <i class="bi bi-plus-lg"></i> Adicionar Novo Utilizador
+        </button>
+    </div>
+
+    <!-- Members list card -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title mb-4">
+                Utilizadores Registados 
+                <small class="text-muted fs-6 fw-normal" id="total-utilizadores">0 utilizadores</small>
+            </h5>
+            
+            <!-- Search -->
+            <div class="input-group mb-4">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" id="searchInput" class="form-control border-start-0"
+                       placeholder="Filtrar por nome ou email..."
+                       oninput="filtrar()">
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table align-middle" id="tabela-utilizadores">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>Data de Registo</th>
+                            <th>Estado</th>
+                            <th class="text-center">Pedidos de Diagnóstico</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Preenchido pelo JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal Adicionar / Editar -->
+<div class="modal fade" id="modalForm" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitulo">Adicionar Utilizador</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Nome</label>
+                    <input type="text" class="form-control" id="inputNome" placeholder="Nome completo">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="text" class="form-control" id="inputEmail" placeholder="email@exemplo.com">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Estado</label>
+                    <select class="form-select" id="inputEstado">
+                        <option value="true">Ativo</option>
+                        <option value="false">Inativo</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary-custom text-white" onclick="guardarUtilizador()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Ver Detalhes -->
+<div class="modal fade" id="modalVer" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalhes do Utilizador</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalVerConteudo">
+                <!-- Preenchido pelo JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast-custom" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+let utilizadores = [
+    { id: 1, nome: "João Silva",     email: "joao.silva@email.com",    data_registo: "2025-11-15", ativo: true,  num_pedidos: 12 },
+    { id: 2, nome: "Maria Santos",   email: "maria.santos@email.com",   data_registo: "2026-01-08", ativo: true,  num_pedidos: 3  },
+    { id: 3, nome: "Carlos Ferreira",email: "carlos.ferreira@email.com",data_registo: "2025-09-22", ativo: false, num_pedidos: 0  },
+    { id: 4, nome: "Ana Costa",      email: "ana.costa@email.com",      data_registo: "2026-02-14", ativo: true,  num_pedidos: 8  }
+];
+
+let editandoId = null;
+let modalForm = null;
+let modalVer  = null;
+
+document.addEventListener("DOMContentLoaded", () => {
+    modalForm = new bootstrap.Modal(document.getElementById("modalForm"));
+    modalVer  = new bootstrap.Modal(document.getElementById("modalVer"));
+    renderizarTabela(utilizadores);
+});
+
+// Renderiza a tabela com os dados fornecidos
+function renderizarTabela(dados) {
+    const tbody = document.querySelector("#tabela-utilizadores tbody");
+    tbody.innerHTML = "";
+
+    dados.forEach(user => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td><strong>${user.nome}</strong></td>
+            <td>${user.email}</td>
+            <td>${user.data_registo}</td>
+            <td>
+                <span class="badge ${user.ativo ? 'badge-active' : 'badge-inactive'}">
+                    ${user.ativo ? 'Ativo' : 'Inativo'}
+                </span>
+            </td>
+            <td class="text-center fw-bold">${user.num_pedidos}</td>
+            <td class="text-center">
+                <button class="btn btn-sm btn-outline-primary me-1" onclick="verUtilizador(${user.id})">
+                    <i class="bi bi-eye"></i> Ver
+                </button>
+                <button class="btn btn-sm btn-outline-warning me-1" onclick="editarUtilizador(${user.id})">
+                    <i class="bi bi-pencil"></i> Editar
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="eliminarUtilizador(${user.id})">
+                    <i class="bi bi-trash"></i> Eliminar
+                </button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    document.getElementById("total-utilizadores").textContent = `${dados.length} utilizadores`;
+}
+
+// Filtra a tabela em tempo real
+function filtrar() {
+    const q = document.getElementById("searchInput").value.toLowerCase();
+    const filtrados = utilizadores.filter(u =>
+        u.nome.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
+    );
+    renderizarTabela(filtrados);
+}
+
+// Abre modal para adicionar novo utilizador
+function abrirModalAdicionar() {
+    editandoId = null;
+    document.getElementById("modalTitulo").textContent = "Adicionar Utilizador";
+    document.getElementById("inputNome").value  = "";
+    document.getElementById("inputEmail").value = "";
+    document.getElementById("inputEstado").value = "true";
+    modalForm.show();
+}
+
+// Abre modal com dados preenchidos para editar
+function editarUtilizador(id) {
+    const u = utilizadores.find(x => x.id === id);
+    if (!u) return;
+    editandoId = id;
+    document.getElementById("modalTitulo").textContent = "Editar Utilizador";
+    document.getElementById("inputNome").value   = u.nome;
+    document.getElementById("inputEmail").value  = u.email;
+    document.getElementById("inputEstado").value = String(u.ativo);
+    modalForm.show();
+}
+
+// Guarda (cria ou atualiza) um utilizador
+function guardarUtilizador() {
+    const nome  = document.getElementById("inputNome").value.trim();
+    const email = document.getElementById("inputEmail").value.trim();
+    const ativo = document.getElementById("inputEstado").value === "true";
+
+    if (!nome || !email) {
+        mostrarToast("Preenche todos os campos.");
+        return;
+    }
+
+    if (editandoId) {
+        const u = utilizadores.find(x => x.id === editandoId);
+        u.nome  = nome;
+        u.email = email;
+        u.ativo = ativo;
+        mostrarToast("Utilizador atualizado com sucesso.");
+    } else {
+        utilizadores.push({
+            id: Date.now(),
+            nome,
+            email,
+            data_registo: new Date().toISOString().split("T")[0],
+            ativo,
+            num_pedidos: 0
+        });
+        mostrarToast("Utilizador adicionado com sucesso.");
+    }
+
+    modalForm.hide();
+    filtrar();
+}
+
+// Abre modal com detalhes do utilizador
+function verUtilizador(id) {
+    const u = utilizadores.find(x => x.id === id);
+    if (!u) return;
+    document.getElementById("modalVerConteudo").innerHTML = `
+        <p><strong>Nome:</strong> ${u.nome}</p>
+        <p><strong>Email:</strong> ${u.email}</p>
+        <p><strong>Data de Registo:</strong> ${u.data_registo}</p>
+        <p><strong>Estado:</strong> ${u.ativo ? 'Ativo' : 'Inativo'}</p>
+        <p><strong>Pedidos de Diagnóstico:</strong> ${u.num_pedidos}</p>
+    `;
+    modalVer.show();
+}
+
+// Elimina um utilizador
+function eliminarUtilizador(id) {
+    utilizadores = utilizadores.filter(x => x.id !== id);
+    filtrar();
+    mostrarToast("Utilizador eliminado.");
+}
+
+// Mostra uma notificação temporária
+function mostrarToast(msg) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 2500);
+}
+</script>
+
+</body>
+</html>
