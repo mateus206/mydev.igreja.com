@@ -14,10 +14,10 @@
             <p class="mb-4 fw-bold" style="color:#5dade2; font-size: 1.5rem;">Churches+</p>
 
             <!-- FORMULÁRIO -->
-            <form id="loginForm" class="text-start">
+            <form class="text-start" method="POST" action="/login">
                 <div class="mb-3">
                     <label class="form-label">Email Address</label>
-                    <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
+                    <input name="email" type="email" class="form-control" id="email" placeholder="Enter your email" required>
                 </div>
 
                 <div class="mb-3">

@@ -11,6 +11,14 @@ if ($uri === '/' || $uri === '/index' || $uri === '/home') {
 } elseif ($uri === '/login' && $method === 'GET') {
     (new WebController())->login();
 
-}else {
+}
+
+elseif ($uri === '/login' && $method === 'POST') {
+    die('porto');
+
+}
+
+
+else {
     echo "Página não encontrada";
 }
