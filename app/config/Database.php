@@ -2,7 +2,7 @@
 
 class DataBase {
   private $host = "localhost";
-  private $db_name = "mydevigreja.com";
+  private $db_name = "igreja_system";
   private $username = "root";
   private $password = "";
 
