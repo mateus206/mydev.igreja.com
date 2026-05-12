@@ -1,102 +1,116 @@
-<?php include __DIR__ ."/../includes/header_home.php"; ?>
+<?php include __DIR__ . '/../includes/header_home.php'; ?>
 
-<div class="container-fluid flex-grow-1">
-  <div class="row">
+<div id="page-campanhas" class="page-section pb-4">
 
-    <!-- Main -->
-    <main class="col-12 px-4 py-4">
-
-      <div class="mb-3 border-bottom pb-2">
-        <h1 class="h2">Dashboard</h1>
-      </div>
-
-      <!-- Stat Cards -->
-      <div class="row g-3 mb-4">
-
-        <div class="col-md-4">
-          <div class="card border-0 shadow-sm p-3">
-            <div class="d-flex align-items-center gap-3">
-              <div class="bg-info text-white rounded p-3">
-                <i class="bi bi-people-fill fs-4"></i>
-              </div>
-              <div>
-                <h3 class="mb-0">70</h3>
-                <small class="text-muted">Total Members</small>
-              </div>
-            </div>
-          </div>
+    <div class="section-header d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 mb-0">Campanhas de Solidariedade</h1>
+            <small class="text-muted">
+                Gestão de todas as campanhas ativas e encerradas
+            </small>
         </div>
 
-        <div class="col-md-4">
-          <div class="card border-0 shadow-sm p-3">
-            <div class="d-flex align-items-center gap-3">
-              <div class="bg-primary text-white rounded p-3">
-                <i class="bi bi-person-check-fill fs-4"></i>
-              </div>
-              <div>
-                <h3 class="mb-0">50 / 20</h3>
-                <small class="text-muted">Active / Inactive</small>
-              </div>
-            </div>
-          </div>
+        <div class="d-flex gap-2">
+            <input type="text" class="form-control" placeholder="Pesquisar campanhas..." style="width:220px">
+            <button class="btn btn-info text-white">+ Nova campanha</button>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+
+        <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+            <span class="fw-semibold">Todas as campanhas</span>
+            <button class="btn btn-outline-secondary btn-sm">Exportar</button>
         </div>
 
-        <div class="col-md-4">
-          <div class="card border-0 shadow-sm p-3">
-            <div class="d-flex align-items-center gap-3">
-              <div class="bg-warning text-white rounded p-3">
-                <i class="bi bi-calendar3 fs-4"></i>
-              </div>
-              <div>
-                <h3 class="mb-0">5</h3>
-                <small class="text-muted">Events (Year)</small>
-              </div>
-            </div>
-          </div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Datas</th>
+                        <th>Descrição</th>
+                        <th>Estado</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td class="fw-semibold">Banco Alimentar de Páscoa</td>
+                        <td class="text-muted">1–20 Abr 2025</td>
+                        <td>Recolha de alimentos não perecíveis para famílias carenciadas da região</td>
+                        <td><span class="badge bg-success rounded-pill px-3 py-2">Em curso</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-outline-danger ms-1"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="fw-semibold">Roupa para o Inverno</td>
+                        <td class="text-muted">1 Nov – 15 Dez 2024</td>
+                        <td>Angariação de agasalhos e cobertores para pessoas sem-abrigo</td>
+                        <td><span class="badge bg-secondary rounded-pill px-3 py-2">Encerrada</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-outline-danger ms-1"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="fw-semibold">Fundo de Emergência Escolar</td>
+                        <td class="text-muted">15 Fev – 30 Jun 2025</td>
+                        <td>Apoio a crianças em carência para material escolar e propinas</td>
+                        <td><span class="badge bg-success rounded-pill px-3 py-2">Em curso</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-outline-danger ms-1"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="fw-semibold">Apoio a Refugiados</td>
+                        <td class="text-muted">1 Mar – 31 Mai 2025</td>
+                        <td>Recolha de donativos e voluntariado para famílias refugiadas</td>
+                        <td><span class="badge bg-success rounded-pill px-3 py-2">Em curso</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-outline-danger ms-1"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="fw-semibold">Natal Solidário 2024</td>
+                        <td class="text-muted">1–24 Dez 2024</td>
+                        <td>Angariação de prendas e brinquedos para crianças hospitalizadas</td>
+                        <td><span class="badge bg-secondary rounded-pill px-3 py-2">Encerrada</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-outline-danger ms-1"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="fw-semibold">Horta Comunitária</td>
+                        <td class="text-muted">1 Mai – 31 Out 2025</td>
+                        <td>Projeto de horta partilhada para idosos e famílias da paróquia</td>
+                        <td><span class="badge bg-warning text-dark rounded-pill px-3 py-2">Agendada</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-outline-danger ms-1"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
         </div>
 
+    </div>
 
-      </div>
-
-      <!-- Next Event + Recent Activities -->
-      <div class="row mt-4 g-3">
-
-        <div class="col-md-6">
-          <h5>Next Event</h5>
-          <div class="card border-2 border-dashed text-center p-4 bg-light">
-            <i class="bi bi-calendar-event fs-1 text-primary mb-2"></i>
-            <h6 class="mb-1">Special Service</h6>
-            <p class="mb-0">Date: 02/25/2026</p>
-            <p class="mb-0">Time: 7:00 PM</p>
-            <p>Location: Central Church</p>
-          </div>
-        </div>
-
-        <div class="col-md-6">
-          <h5>Recent Activities</h5>
-          <div class="card border p-3">
-            <ul class="list-unstyled mb-0">
-              <li class="mb-2">
-                <i class="bi bi-check-circle-fill text-success me-2"></i>
-                Leaders meeting held on 02/10
-              </li>
-              <li class="mb-2">
-                <i class="bi bi-check-circle-fill text-success me-2"></i>
-                $500 donation received on 02/12
-              </li>
-              <li>
-                <i class="bi bi-check-circle-fill text-success me-2"></i>
-                Prayer event completed on 02/15
-              </li>
-            </ul>
-          </div>
-        </div>
-
-      </div>
-
-
-    </main>
-  </div>
 </div>
 
-<?php include __DIR__ ."/../includes/footer_home.php"; ?>
+<?php include __DIR__ . '/../includes/footer_home.php'; ?>

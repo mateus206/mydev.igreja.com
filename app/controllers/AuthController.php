@@ -76,6 +76,16 @@ class AuthController
         }
  
     }
+   public function logout() {
+    unset($_SESSION['token']);
+
+    $_SESSION['toast'] = [
+      'type' => 'success',
+      'message' => 'Sessão terminada com sucesso.'
+    ];
+
+    header("Location: /");
+  }
 
 
 }

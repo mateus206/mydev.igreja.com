@@ -21,6 +21,19 @@ elseif ($uri === '/login' && $method === 'POST') {
 elseif ($uri === '/dashboard' && $method === 'GET') {
     (new WebController())->dashboard();
 }
+
+elseif ($uri === '/ativos' && $method === 'GET') {
+    (new WebController())->ativos();
+}
+
+elseif ($uri === '/campanhas' && $method === 'GET') {
+    (new WebController())->campanhas();
+}
+
+elseif ($uri === '/logout' && $method === 'POST') {
+    (new AuthController())->logoutWeb();
+}
+
 else {
     echo "Página não encontrada";
 }

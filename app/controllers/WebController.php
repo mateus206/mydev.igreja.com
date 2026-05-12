@@ -22,4 +22,15 @@ class WebController
         $this->view('dashboard');
     }
 
+    public function ativos()
+    {
+        $this->view('ativos');
+    }
+
+    public function campanhas()
+    {
+        $this->view('campanhas');
+    }
+
+
 }
