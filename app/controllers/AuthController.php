@@ -76,7 +76,7 @@ class AuthController
         }
  
     }
-   public function logout() {
+   public function logoutWeb() {
     unset($_SESSION['token']);
 
     $_SESSION['toast'] = [
