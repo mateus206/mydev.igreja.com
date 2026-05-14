@@ -226,6 +226,18 @@
                 </div>
             </div>
 
+            <div class="col-md-3">
+    <div class="card text-center h-100">
+        <img src="https://cdn-icons-png.flaticon.com/512/732/732212.png"
+             class="card-img-top p-4"
+             style="height:120px; object-fit:contain;">
+        <div class="card-body">
+            <h5 class="fw-bold">HTML</h5>
+            <p>Structure of web pages.</p>
+        </div>
+    </div>
+</div>
+
         </div>
     </div>
 </section>
