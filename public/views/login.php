@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Administrador - igrejas+</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- ADICIONA ISTO -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-
 
     <style>
         body {
@@ -82,9 +82,10 @@
 
     </div>
 
+  <!-- Antes do </body> -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-
+ 
     <script>
         const toast = <?= json_encode($_SESSION["toast"] ?? null) ?>;
         <?php unset($_SESSION['toast']); ?>
@@ -92,6 +93,7 @@
             toastr[toast.type](toast.message);
         }
     </script>
+ 
 </body>
-
+ 
 </html>

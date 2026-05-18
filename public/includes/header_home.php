@@ -1,64 +1,103 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt" data-bs-theme="light">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Central Church Dashboard</title>
+
+  <title>Igreja+ Admin</title>
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 
-<body class="bg-light d-flex flex-column min-vh-100">
+<body>
 
-  <!-- Navbar / Header com menu hamburger -->
-  <nav class="navbar bg-info">
-    <div class="container-fluid px-3">
-      <a class="navbar-brand text-white fw-bold" href="dashboard.html">
-        <i class="bi bi-church me-2"></i> Churches +
-      </a>
-      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-        <i class="bi bi-list text-white fs-3"></i>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+
+      <!-- HAMBURGER -->
+      <button class="btn btn-outline-light" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar">
+        <i class="fa-solid fa-bars"></i>
       </button>
-      <div class="collapse navbar-collapse" id="navMenu">
-        <ul class="navbar-nav mt-2 mb-1">
+
+      <a class="navbar-brand fw-bold ms-2" href="#">Igreja+</a>
+
+      <div class="ms-auto d-flex align-items-center gap-3">
+
+        <span class="text-white">
+          <i class="fa-solid fa-user"></i> Admin
+          <?php if(AuthMiddlewareWeb::isLogin()): ?>
+              <a class="nav-link">
+                <?= $_SESSION['token']['email'] ?>
+              </a>
+            <?php endif; ?>
+        </span>
+
+        <ul class="navbar-nav flex-row gap-3">
           <li class="nav-item">
-            <a class="nav-link text-white-50" href="/dashboard">
-              <i class="bi bi-people me-1"></i> Dashboard
-            </a>
+            <a class="nav-link text-white" href="/dashboard">Dashboard</a>
           </li>
+
           <li class="nav-item">
-            <a class="nav-link text-white-50" href="/membros">
-              <i class="bi bi-people me-1"></i> Members
-            </a>
+            <a class="nav-link text-white" href="/users">Users</a>
           </li>
+
           <li class="nav-item">
-            <a class="nav-link text-white-50" href="/eventos ">
-              <i class="bi bi-calendar-event me-1"></i> Events
-            </a>
+            <a class="nav-link text-white" href="/eventos">Eventos</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link text-white-50" href="/ativos">
-              <i class="bi bi-wallet2 me-1"></i> Active / Inactive
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white-50" href="/utilizadores">
-              <i class="bi bi-people me-1"></i> Users
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white-50" href="/campanhas">
-              <i class="bi bi-megaphone me-1"></i> Campaigns
-            </a>
-          </li>
-          <form action = "/logout" method="POST" class="d-flex mt-2">
-            <button class="btn btn-outline-light w-100">
-              <i class="bi bi-box-arrow-right me-1"></i> Logout
-            </button>
-          </form>
         </ul>
+
       </div>
+
 
     </div>
   </nav>
+
+  <!-- SIDEBAR OFFCANVAS -->
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebar">
+
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title">Painel Admin</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+
+    <div class="offcanvas-body">
+
+      <div class="list-group">
+
+        <a href="/dashboard" class="list-group-item list-group-item-action active">
+          <i class="fa-solid fa-gauge"></i> Dashboard
+        </a>
+
+        <a href="/users" class="list-group-item list-group-item-action">
+          <i class="fa-solid fa-users"></i> Users
+        </a>
+
+        <a href="#" class="list-group-item list-group-item-action">
+          <i class="fa-solid fa-calendar"></i> Eventos
+        </a>
+
+        <a href="#" class="list-group-item list-group-item-action">
+          <i class="fa-solid fa-hand-holding-heart"></i> Apoio Social
+        </a>
+
+        <a href="#" class="list-group-item list-group-item-action">
+          <i class="fa-solid fa-pray"></i> Pedidos de Oração
+        </a>
+
+        <a href="#" class="list-group-item list-group-item-action">
+          <i class="fa-solid fa-image"></i> Ação Solidária
+        </a>
+
+      </div>
+
+      <form action="/logout" method="POST" class="mt-4">
+        <button class="btn btn-danger w-100" type="submit">Logout</button>
+      </form>
+
+    </div>
+  </div>

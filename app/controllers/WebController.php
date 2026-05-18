@@ -2,11 +2,11 @@
 
 class WebController
 {
-    private function view($viewName)
+    private function view($viewName, $data = [])
     {
+        extract($data, EXTR_SKIP);
         require_once __DIR__ . "/../../public/views/{$viewName}.php";
     }
-
     public function index()
     {
         $this->view('home');
@@ -19,12 +19,17 @@ class WebController
 
     public function dashboard()
     {
-        $this->view('dashboard');
+        $userCount = (new UserDAO())->getUsersCount();
+        $eventCount = (new UserDAO())->getEventCount();
+        $apoioSocialCount = (new UserDAO())->getApoioSocialCount();
+        $pedidosOracaoCount = (new UserDAO())->getPedidosOracaoCount();
+        $this->view('dashboard', ['userCount' => $userCount, 'eventCount' => $eventCount, 'apoioSocialCount' => $apoioSocialCount, 'pedidosOracaoCount' => $pedidosOracaoCount]);
     }
 
-    public function ativos()
+    public function users()
     {
-        $this->view('ativos');
+        $users = (new UserDAO())->getUsers();
+        $this->view('users', ['users' => $users]);
     }
 
     public function campanhas()

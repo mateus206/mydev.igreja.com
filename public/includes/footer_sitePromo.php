@@ -9,8 +9,18 @@
 
     </div>
 </footer>
-<!-- Bootstrap JS (único script necessário) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+ 
+<script>
+    const toast = <?= json_encode($_SESSION["toast"] ?? null) ?>;
+    <?php unset($_SESSION['toast']); ?>
+    if (toast) {
+        toastr[toast.type](toast.message);
+    }
+</script>
+ 
 
 </body>
 </html>

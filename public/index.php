@@ -35,7 +35,7 @@ elseif ($uri === '/dashboard' && $method === 'GET') {
     }
 }
 
-elseif ($uri === '/ativos' && $method === 'GET') {
+elseif ($uri === '/users' && $method === 'GET') {
     if (!$isLogin) {
         $_SESSION['toast'] = [
             'type' => 'error',
@@ -45,7 +45,7 @@ elseif ($uri === '/ativos' && $method === 'GET') {
         header("Location: /login");
         exit;
     } else {
-        (new WebController())->ativos();
+        (new WebController())->users();
     }
 }
 
