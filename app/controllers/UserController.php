@@ -1,43 +1,49 @@
 <?php
 
 require_once __DIR__ . "/../dao/UserDAO.php";
-require_once __DIR__ . "/../config/jwt.php";
-
-use Firebase\JWT\JWT;
+require_once __DIR__ . "/../utils/Utils.php";
 
 class UserController
 {
-  private function view(string $name, array $data = []): void
-  {
-    extract($data, EXTR_SKIP);
-    require __DIR__ . "/../../public/views/{$name}.php";
-  }
+    public function listprofileApi($userId)
+    {
+        try {
+            $user = (new UserDAO())->findById($userId);
 
-  public function listprofileApi($userId){
-    try{
-        $user = (new UserDao())->findById($userId);
-        $emailVerifications = (new UserDao())->getEmailVerifications($userId);
-        $dataResponse = [
-            'success'=>true,
-            'message'=>"Operação realizada com sucesso",
-            'data'=>[
-                'user'=>$user->toArray(),
-                'email_verifications'=>$emailVerifications
-            ]
-        ];
-        utils::jsonResponse($dataResponse);
-        exit;
+            if (!$user) {
+                $dataResponse = [
+                    'success' => false,
+                    'message' => "Utilizador não encontrado.",
+                    'data' => []
+                ];
 
+                Utils::jsonResponse($dataResponse, 404);
+                exit;
+            }
 
-    }catch(Exception $e){
-        $dataResponse = [
-            'success'=>false,
-            'message'=>$e->getMessage(),
-            'data'=>[]
-        ];
-        utils::jsonResponse($dataResponse,401);
-        exit;
+            $emailVerifications = (new UserDAO())->getEmailVerifications($userId);
+
+            $dataResponse = [
+                'success' => true,
+                'message' => "Operação realizada com sucesso",
+                'data' => [
+                    'user' => $user->toArray(),
+                    'email_verifications' => $emailVerifications
+                ]
+            ];
+
+            Utils::jsonResponse($dataResponse);
+            exit;
+
+        } catch (Exception $e) {
+            $dataResponse = [
+                'success' => false,
+                'message' => $e->getMessage(),
+                'data' => []
+            ];
+
+            Utils::jsonResponse($dataResponse, 401);
+            exit;
+        }
     }
-  }
-
 }
