@@ -15,12 +15,84 @@ use Firebase\JWT\BeforeValidException;
 
 class AuthController
 {
-  private function view($name, $data = [])
-  {
-    extract($data, EXTR_SKIP);
+    private function view($name, $data = [])
+    {
+        extract($data, EXTR_SKIP);
     
-    require _DIR_ . '/../../public/views/' . $name . '.php';
-  }
+        require __DIR__ . '/../../public/views/' . $name . '.php';
+    }
+
+    // esse metodo e para saber se o token e valido ou não
+    public static function requireAuth(): object
+    {
+        try {
+            // ele vai buscar o token no header enviado no HTTP
+            $headers = getallheaders();
+
+            // ele vai procurar por Authorization ou authorization
+            $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? null;
+
+            // se nao existir Authorization
+            if (!$authHeader) {
+                throw new Exception("Token não enviado.");
+            }
+
+            // aqui ele vai validar se o formato do token e valido
+            if (!preg_match('/Bearer\s+(.+)/i', $authHeader, $matches)) {
+                throw new Exception("Formato do token inválido.");
+            }
+
+            // ele vai extrair o token do header
+            $token = $matches[1];
+
+            // aqui ele vai decodificar o token
+            $decoded = JWT::decode($token, new Key(JwtConfig::$secret, 'HS256'));
+
+            return $decoded;
+
+        } catch (ExpiredException $e) {
+            $dataResponse = [
+                'success' => false,
+                'message' => "Token expirado: " . $e->getMessage(),
+                'data' => []
+            ];
+
+            Utils::jsonResponse($dataResponse, 401);
+            exit;
+
+        } catch (SignatureInvalidException $e) {
+            $dataResponse = [
+                'success' => false,
+                'message' => "Assinatura do token inválida: " . $e->getMessage(),
+                'data' => []
+            ];
+
+            Utils::jsonResponse($dataResponse, 401);
+            exit;
+
+        } catch (BeforeValidException $e) {
+            $dataResponse = [
+                'success' => false,
+                'message' => "Token ainda não é válido: " . $e->getMessage(),
+                'data' => []
+            ];
+
+            Utils::jsonResponse($dataResponse, 401);
+            exit;
+
+        } catch (Exception $e) {
+            $dataResponse = [
+                'success' => false,
+                'message' => "Erro na autenticação: " . $e->getMessage(),
+                'data' => []
+            ];
+
+            Utils::jsonResponse($dataResponse, 401);
+            exit;
+        }
+    }
+
+
    public function loginWeb()
     {
         //var_dump("Estou no login a validar os dados");
@@ -172,12 +244,11 @@ $userId = $userDao->createPending($nome, $telefone, $email, $hashedPassword);
 
             http_response_code(400);
 
-            echo json_encode([
-                'success' => false,
-                'message' => 'Erro ao criar conta',
-                'data' => []
-            ]);
-
+          echo json_encode([
+    'success' => false,
+    'message' => $e->getMessage(),
+    'data' => []
+]);
             exit;
         }
     }

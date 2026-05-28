@@ -162,4 +162,35 @@ class UserDAO
 
     return $users;
   }
+  public function findById(int $id): ?User
+  {
+    $sql = "
+          SELECT
+            id, nome, email, password, is_admin, telefone, data_resgito, estado,is_verified
+          FROM users
+          WHERE id = ?
+          LIMIT 1
+        ";
+
+    $stmt = $this->conn->prepare($sql);
+    $stmt->execute([$id]);
+
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$row) {  
+      return null;
+    }
+     return $this->mapRowToUser($row);
+}
+  public function getEmailVerifications($userId) {
+    $sql = "SELECT * FROM email_verifications WHERE user_id = ?";
+
+    $stmt = $this->conn->prepare($sql);
+
+    $stmt->execute([$userId]);
+
+    $emailVerifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    return $emailVerifications;
+  }
 }
