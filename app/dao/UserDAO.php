@@ -193,4 +193,19 @@ class UserDAO
 
     return $emailVerifications;
   }
+
+  public function updatePasswordById(int $id, string $hashedPassword): ?User
+  {
+    $sql = "
+      UPDATE users
+      SET password = ?
+      WHERE id = ?
+    ";
+
+    $stmt = $this->conn->prepare($sql);
+    $stmt->execute([$hashedPassword, $id]);
+
+    return $this->findById($id);
+  }
+
 }

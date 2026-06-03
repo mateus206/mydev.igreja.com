@@ -79,9 +79,16 @@ class AcaoSolidariaDAO
   public function findById(int $id): ?AcaoSolidaria
   {
     $sql = "
-      SELECT id, id_user, data_hora_inicio, nome_acao
-      FROM acao_solidarias
-      WHERE id = ?
+      SELECT 
+        a.id,
+        a.id_user,
+        a.data_hora_inicio,
+        a.nome_acao,
+        d.descricao,
+        d.como_ajudar
+      FROM acao_solidarias a
+      LEFT JOIN detalhe_acao_solidarias d ON d.id_acao_solidaria = a.id
+      WHERE a.id = ?
       LIMIT 1
     ";
 
@@ -105,6 +112,14 @@ class AcaoSolidariaDAO
     $acao->setIdUser((int)$row["id_user"]);
     $acao->setDataHoraInicio($row["data_hora_inicio"]);
     $acao->setNomeAcao($row["nome_acao"]);
+
+    if (array_key_exists("descricao", $row)) {
+      $acao->setDescricao($row["descricao"]);
+    }
+
+    if (array_key_exists("como_ajudar", $row)) {
+      $acao->setComoAjudar($row["como_ajudar"]);
+    }
 
     return $acao;
   }

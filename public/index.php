@@ -3,6 +3,7 @@ session_start();
 require "../app/controllers/WebController.php";
 require "../app/controllers/AuthController.php";
 require "../app/middleware/AuthMiddleware.php";
+require "../app/middleware/AuthMiddlewareWeb.php";
 
  
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);

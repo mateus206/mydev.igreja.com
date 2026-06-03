@@ -36,4 +36,36 @@ class AcaoSolidariascontroller
             exit;
         }
     }
+    public function showApi(int $id): void
+    {
+        try {
+            $acaoSolidaria = (new AcaoSolidariaDAO())->findById($id);
+
+            if (!$acaoSolidaria) {
+                throw new Exception("Ação solidária não encontrada");
+            }
+
+            $dataResponse = [
+                "success" => true,
+                "message" => "Operação realizada com sucesso",
+                "data" => [
+                    "acao_solidaria" => $acaoSolidaria->toArray()
+                ]
+            ];
+
+            Utils::jsonResponse($dataResponse);
+            exit;
+
+        } catch (Exception $e) {
+            $dataResponse = [
+                "success" => false,
+                "message" => $e->getMessage(),
+                "data" => []
+            ];
+
+            Utils::jsonResponse($dataResponse, 404);
+            exit;
+        }
+    }
+
 }

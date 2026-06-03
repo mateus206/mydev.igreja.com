@@ -6,6 +6,8 @@ class AcaoSolidaria
   private ?int $id_user = null;
   private ?string $data_hora_inicio = null;
   private ?string $nome_acao = null;
+  private ?string $descricao = null;
+  private ?string $como_ajudar = null;
 
   public function getId(): ?int
   {
@@ -47,13 +49,42 @@ class AcaoSolidaria
     $this->nome_acao = $nome_acao;
   }
 
+  public function getDescricao(): ?string
+  {
+    return $this->descricao;
+  }
+
+  public function setDescricao(?string $descricao): void
+  {
+    $this->descricao = $descricao;
+  }
+
+  public function getComoAjudar(): ?string
+  {
+    return $this->como_ajudar;
+  }
+
+  public function setComoAjudar(?string $como_ajudar): void
+  {
+    $this->como_ajudar = $como_ajudar;
+  }
+
   public function toArray(): array
   {
-    return [
+    $data = [
       "id" => $this->id,
       "id_user" => $this->id_user,
       "data_hora_inicio" => $this->data_hora_inicio,
       "nome_acao" => $this->nome_acao
     ];
+
+    if ($this->descricao !== null || $this->como_ajudar !== null) {
+      $data["detalhe_acao_solidaria"] = [
+        "descricao" => $this->descricao,
+        "como_ajudar" => $this->como_ajudar
+      ];
+    }
+
+    return $data;
   }
 }
