@@ -2,6 +2,8 @@
 
 require_once __DIR__ . '/../dao/UserDAO.php';
 require_once __DIR__ . '/../dao/EmailVerificationDAO.php';
+require_once __DIR__ . '/../dao/PedidoOracaoDAO.php';
+require_once __DIR__ . '/../dao/ApoioSocialDAO.php';
 require_once __DIR__ . '/../config/Databasesingle.php';
 require_once __DIR__ . '/../services/MyMailerService.php';
 require_once __DIR__ . '/../utils/Utils.php';
@@ -244,12 +246,11 @@ $userId = $userDao->createPending($nome, $telefone, $email, $hashedPassword);
 
             http_response_code(400);
 
-            echo json_encode([
-                'success' => false,
-                'message' => 'Erro ao criar conta',
-                'data' => []
-            ]);
-
+          echo json_encode([
+    'success' => false,
+    'message' => $e->getMessage(),
+    'data' => []
+]);
             exit;
         }
     }
@@ -288,4 +289,89 @@ $userId = $userDao->createPending($nome, $telefone, $email, $hashedPassword);
 
     Utils::jsonResponse($responseData, 200);
   }
+
+  public function pedidoOracaoApi(int $userId): void
+  {
+    try {
+      $input = json_decode(file_get_contents("php://input"), true);
+      if (!is_array($input)) {
+        $input = $_POST;
+      }
+
+      $email = trim($input["email"] ?? "");
+      $tipoPedido = trim($input["tipo_pedido"] ?? "");
+      $descricao = trim($input["descricao"] ?? "");
+
+      if ($email === "" || $tipoPedido === "" || $descricao === "") {
+        throw new Exception("email, tipo_pedido e descricao são obrigatórios");
+      }
+
+      $createdPedido = (new PedidoOracaoDAO())->create($userId, $email, $tipoPedido, $descricao);
+
+      $responseData = [
+        'success' => true,
+        'message' => 'Pedido de oração enviado com sucesso',
+        'data' => [
+          'pedido_oracao' => $createdPedido
+        ]
+      ];
+
+      Utils::jsonResponse($responseData, 201);
+      exit;
+
+    } catch (Exception $e) {
+      $responseData = [
+        'success' => false,
+        'message' => $e->getMessage(),
+        'data' => []
+      ];
+
+      Utils::jsonResponse($responseData, 400);
+      exit;
+    }
+  }
+
+  public function apoioSocialApi(int $userId): void
+  {
+    try {
+      $input = json_decode(file_get_contents("php://input"), true);
+      if (!is_array($input)) {
+        $input = $_POST;
+      }
+
+      $local = trim($input["local"] ?? "");
+      $codigoPostal = trim($input["codigo_postal"] ?? "");
+      $telefone = trim($input["telefone"] ?? "");
+      $membrosDeFamilia = $input["membros_de_familia"] ?? "";
+      $pedidoAjuda = trim($input["pedido_ajuda"] ?? "");
+
+      if ($local === "" || $codigoPostal === "" || $telefone === "" || $membrosDeFamilia === "" || $pedidoAjuda === "") {
+        throw new Exception("local, codigo_postal, telefone, membros_de_familia e pedido_ajuda são obrigatórios");
+      }
+
+      $createdPedido = (new ApoioSocialDAO())->create($userId, $local, $codigoPostal, $telefone, $membrosDeFamilia, $pedidoAjuda);
+
+      $responseData = [
+        'success' => true,
+        'message' => 'Pedido de apoio social enviado com sucesso',
+        'data' => [
+          'apoio_social' => $createdPedido
+        ]
+      ];
+
+      Utils::jsonResponse($responseData, 201);
+      exit;
+
+    } catch (Exception $e) {
+      $responseData = [
+        'success' => false,
+        'message' => $e->getMessage(),
+        'data' => []
+      ];
+
+      Utils::jsonResponse($responseData, 400);
+      exit;
+    }
+  }
+
 }

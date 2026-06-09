@@ -1,3 +1,4 @@
+-- Active: 1779360747419@@127.0.0.1@3306@igreja_system
 <?php include __DIR__ . "/../includes/header_home.php"; ?>
 
 <body class="d-flex flex-column min-vh-100">

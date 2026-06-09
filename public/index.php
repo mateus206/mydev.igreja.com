@@ -2,6 +2,7 @@
 session_start();
 require "../app/controllers/WebController.php";
 require "../app/controllers/AuthController.php";
+require "../app/middleware/AuthMiddleware.php";
 require "../app/middleware/AuthMiddlewareWeb.php";
 
  
