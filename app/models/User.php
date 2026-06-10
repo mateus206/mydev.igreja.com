@@ -140,4 +140,16 @@ class User
             'is_verified' => $this->is_verified
         ];
     }
+    public function toArray()
+{
+    return [
+        'id' => $this->id,
+        'is_admin' => $this->is_admin,
+        'nome' => $this->nome,
+        'telefone' => $this->telefone,
+        'email' => $this->email,
+        'data_resgito' => $this->data_resgito,
+        'estado' => $this->estado
+    ];
+}
 }
