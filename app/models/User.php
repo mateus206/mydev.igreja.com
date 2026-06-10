@@ -7,9 +7,10 @@ class User
     private $nome;
     private $telefone;
     private $email;
-    private $data_resgito;
+    private $data_registro;
     private $estado;
     private $password;
+    private $is_verified;
 
     public function __construct(
         int $id = 0,
@@ -17,9 +18,10 @@ class User
         string $nome = '',
         string $telefone = '',
         string $email = '',
-        string $data_resgito = '',
+        string $data_registro = '',
         string $estado = '',
-        string $password = ''
+        string $password = '',
+        bool $is_verified = false
     )
     {
         $this->id = $id;
@@ -27,12 +29,13 @@ class User
         $this->nome = $nome;
         $this->telefone = $telefone;
         $this->email = $email;
-        $this->data_resgito = $data_resgito;
+        $this->data_registro = $data_registro;
         $this->estado = $estado;
         $this->password = $password;
+        $this->is_verified = $is_verified;
     }
 
-    // GETTERS// GETTERS
+    // GETTERS
     public function getId()
     {
         return $this->id;
@@ -63,14 +66,19 @@ class User
         return $this->password;
     }
 
-    public function getDataResgito()
+    public function getDataRegistro()
     {
-        return $this->data_resgito;
+        return $this->data_registro;
     }
 
     public function getEstado()
     {
         return $this->estado;
+    }
+
+    public function getIsVerified()
+    {
+        return $this->is_verified;
     }
 
     // SETTERS
@@ -109,20 +117,27 @@ class User
         $this->password = password_hash($password, PASSWORD_DEFAULT);
     }
 
-    public function setDataResgito($data_resgito)
+    public function setDataRegistro($data_registro)
     {
-        $this->data_resgito = $data_resgito;
+        $this->data_registro = $data_registro;
     }
+
+    public function setIsVerified($is_verified)
+    {
+        $this->is_verified = $is_verified;
+    }
+
     public function toArray()
-{
-    return [
-        'id' => $this->id,
-        'is_admin' => $this->is_admin,
-        'nome' => $this->nome,
-        'telefone' => $this->telefone,
-        'email' => $this->email,
-        'data_resgito' => $this->data_resgito,
-        'estado' => $this->estado
-    ];
-}
+    {
+        return [
+            'id' => $this->id,
+            'is_admin' => $this->is_admin,
+            'nome' => $this->nome,
+            'telefone' => $this->telefone,
+            'email' => $this->email,
+            'data_registro' => $this->data_registro,
+            'estado' => $this->estado,
+            'is_verified' => $this->is_verified
+        ];
+    }
 }

@@ -20,168 +20,108 @@ class AuthController
     private function view($name, $data = [])
     {
         extract($data, EXTR_SKIP);
-    
         require __DIR__ . '/../../public/views/' . $name . '.php';
     }
 
-    // esse metodo e para saber se o token e valido ou não
     public static function requireAuth(): object
     {
         try {
-            // ele vai buscar o token no header enviado no HTTP
             $headers = getallheaders();
-
-            // ele vai procurar por Authorization ou authorization
             $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? null;
 
-            // se nao existir Authorization
             if (!$authHeader) {
                 throw new Exception("Token não enviado.");
             }
 
-            // aqui ele vai validar se o formato do token e valido
             if (!preg_match('/Bearer\s+(.+)/i', $authHeader, $matches)) {
                 throw new Exception("Formato do token inválido.");
             }
 
-            // ele vai extrair o token do header
             $token = $matches[1];
-
-            // aqui ele vai decodificar o token
             $decoded = JWT::decode($token, new Key(JwtConfig::$secret, 'HS256'));
 
             return $decoded;
 
         } catch (ExpiredException $e) {
-            $dataResponse = [
-                'success' => false,
-                'message' => "Token expirado: " . $e->getMessage(),
-                'data' => []
-            ];
-
-            Utils::jsonResponse($dataResponse, 401);
+            Utils::jsonResponse(['success' => false, 'message' => "Token expirado: " . $e->getMessage(), 'data' => []], 401);
             exit;
 
         } catch (SignatureInvalidException $e) {
-            $dataResponse = [
-                'success' => false,
-                'message' => "Assinatura do token inválida: " . $e->getMessage(),
-                'data' => []
-            ];
-
-            Utils::jsonResponse($dataResponse, 401);
+            Utils::jsonResponse(['success' => false, 'message' => "Assinatura do token inválida: " . $e->getMessage(), 'data' => []], 401);
             exit;
 
         } catch (BeforeValidException $e) {
-            $dataResponse = [
-                'success' => false,
-                'message' => "Token ainda não é válido: " . $e->getMessage(),
-                'data' => []
-            ];
-
-            Utils::jsonResponse($dataResponse, 401);
+            Utils::jsonResponse(['success' => false, 'message' => "Token ainda não é válido: " . $e->getMessage(), 'data' => []], 401);
             exit;
 
         } catch (Exception $e) {
-            $dataResponse = [
-                'success' => false,
-                'message' => "Erro na autenticação: " . $e->getMessage(),
-                'data' => []
-            ];
-
-            Utils::jsonResponse($dataResponse, 401);
+            Utils::jsonResponse(['success' => false, 'message' => "Erro na autenticação: " . $e->getMessage(), 'data' => []], 401);
             exit;
         }
     }
 
-
-   public function loginWeb()
+    public function loginWeb()
     {
-        //var_dump("Estou no login a validar os dados");
-        // Apanhar os dados do formulário
-        $email = trim($_POST['email']) ?? '';
- 
-        $password = trim($_POST['password']) ?? '';
- 
-        // Se não houver email ou password, mostrar erro
-        // é preciso lançar exceção para o index.php apanhar e mostrar o erro via flash message
+        $email    = trim($_POST['email'] ?? '');
+        $password = trim($_POST['password'] ?? '');
+
         if (empty($email) || empty($password)) {
-            $_SESSION['toast'] = [
-                'type' => 'error',
-                'message' => 'Email e password são OBRIGATÓRIOS!'
-            ];
+            $_SESSION['toast'] = ['type' => 'error', 'message' => 'Email e password são OBRIGATÓRIOS!'];
             header("Location: /login");
             exit;
         }
- 
+
         $user = (new UserDAO())->findByEmail($email);
-      
- 
+
         if (!$user) {
-            $_SESSION['toast'] = [
-                'type' => 'error',
-                'message' => 'Email ou password inválidos ou não existe conta com esse email'
-            ];
+            $_SESSION['toast'] = ['type' => 'error', 'message' => 'Email ou password inválidos ou não existe conta com esse email'];
             header("Location: /login");
             exit;
         }
- 
- 
-        // Utilizador foi encontrado - verificar password
+
+        // CORRIGIDO: verificar se o email foi verificado antes de permitir login
+        if (!$user->getIsVerified()) {
+            $_SESSION['toast'] = ['type' => 'error', 'message' => 'Conta ainda não verificada. Verifica o teu email.'];
+            header("Location: /login");
+            exit;
+        }
+
         if (password_verify($password, $user->getPassword())) {
-            //var_dump("Password correta");
             $_SESSION['token'] = [
-                'id' => $user->getId(),
+                'id'       => $user->getId(),
                 'username' => $user->getNome(),
-                'email' => $user->getEmail(),
+                'email'    => $user->getEmail(),
                 'is_admin' => $user->getIsAdmin()
             ];
-            // Password correta - criar sessão
-            //$_SESSION['user_id'] = $user->id;
-            //$_SESSION['username'] = $user->username;
- 
-            // Redirecionar para a home
-            $_SESSION['toast'] = [
-                'type' => 'success',
-                'message' => "Bem-vindo de volta, " . $user->getNome() . "!"
-            ];
- 
+
+            $_SESSION['toast'] = ['type' => 'success', 'message' => "Bem-vindo de volta, " . $user->getNome() . "!"];
             header("Location: /dashboard");
             exit;
- 
+
         } else {
-            $_SESSION['toast'] = [
-                'type' => 'error',
-                'message' => "Dados de login inválidos"
-            ];
+            $_SESSION['toast'] = ['type' => 'error', 'message' => "Dados de login inválidos"];
             header("Location: /login");
             exit;
         }
- 
     }
-     public function logoutWeb() {
-    unset($_SESSION['token']);
 
-    $_SESSION['toast'] = [
-      'type' => 'success',
-      'message' => 'Sessão terminada com sucesso.'
-    ];
+    public function logoutWeb()
+    {
+        unset($_SESSION['token']);
 
-    header("Location: /login");
+        $_SESSION['toast'] = ['type' => 'success', 'message' => 'Sessão terminada com sucesso.'];
+        header("Location: /login");
+        exit;
+    }
 
-  }
     public function signupApi(): void
     {
-       
-
         $pdo = Databasesingle::connect();
-
         $pdo->beginTransaction();
 
         try {
-
-            $nome = trim($_POST['nome'] ?? '');
-            $email = trim($_POST['email'] ?? '');
+            $nome     = trim($_POST['nome'] ?? '');
+            $email    = trim($_POST['email'] ?? '');
             $telefone = trim($_POST['telefone'] ?? '');
             $password = trim($_POST['password'] ?? '');
 
@@ -193,185 +133,192 @@ class AuthController
                 throw new Exception("Email inválido.");
             }
 
-            $userDao = new UserDAO();
+            $userDAO = new UserDAO();
 
-            if ($userDao->findByEmail($email)) {
-                throw new Exception("Já existe conta com este email.");
+            if ($userDAO->findByEmail($email)) {
+                throw new Exception("Já existe uma conta com esse email.");
             }
 
-    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            // CORRIGIDO: ordem correta ($nome, $email, $telefone, $password)
+            // a password ainda não é definida aqui — o utilizador define-a ao verificar o email
+            // por isso guardamos um placeholder vazio (será preenchido em verifyEmailSubmit)
+            $userId = $userDAO->createPending($nome, $email, $telefone, password_hash(bin2hex(random_bytes(16)), PASSWORD_DEFAULT));
 
-$userId = $userDao->createPending($nome, $telefone, $email, $hashedPassword);
-           
+            $verifyDAO = new EmailVerificationDAO();
+            $token = $verifyDAO->createForUser($userId, 600);
 
-            $verDao = new EmailVerificationDAO();
-
-            $token = $verDao->createForUser($userId, 300);
-
-            $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-                ? 'https'
-                : 'http';
-
-            $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-
+            $scheme  = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+            $host    = $_SERVER['HTTP_HOST'] ?? 'localhost';
             $baseUrl = $scheme . '://' . $host;
+            $link    = $baseUrl . "/verify-email?token=" . urlencode($token);
 
-            $link = $baseUrl . "/verify-email?token=" . urlencode($token);
-
-            $subject = "Verifica o teu email";
-
+            $subject = "Verifica o teu email (expira em 10 min)";
             $html = "
-                <h2>Olá {$nome}</h2>
-                <p>Clica no link abaixo para ativar a tua conta:</p>
-                <a href='{$link}'>{$link}</a>
+                <div style='font-family: Arial, sans-serif;'>
+                    <h2>Olá, " . htmlspecialchars($nome) . "!</h2>
+                    <p>Para ativares a tua conta e definires a tua password, clica no link abaixo (válido por <b>10 minutos</b>):</p>
+                    <p><a href='{$link}'>{$link}</a></p>
+                    <p>Se o link expirar, faz signup novamente (ou pede reenvio do link).</p>
+                </div>
             ";
 
             (new MyMailerService())->send($email, $subject, $html);
 
             $pdo->commit();
 
-            http_response_code(200);
+            Utils::jsonResponse(['success' => true, 'message' => 'Signup realizado com sucesso. Verifica o teu email.', 'data' => []], 200);
 
-            echo json_encode([
-                'success' => true,
-                'message' => 'signup criado com sucesso',
-                'data' => []
-            ]);
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            Utils::jsonResponse(['success' => false, 'message' => 'Erro no signup: ' . $e->getMessage(), 'data' => []], 400);
+        }
+    }
 
+    public function verifyEmailForm(): void
+    {
+        $token = $_GET['token'] ?? '';
+
+        if ($token === '') {
+            http_response_code(400);
+            echo "Token em falta.";
+            return;
+        }
+
+        // Passa o token para a view
+        require __DIR__ . '/../../public/views/verify-email.php';
+    }
+
+    public function verifyEmailSubmit(): void
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+
+        $token    = (string)($_POST['token'] ?? '');
+        $password = (string)($_POST['password'] ?? '');
+
+        if ($token === '' || $password === '') {
+            throw new Exception("Token e password são obrigatórios.");
+        }
+
+        if (strlen($password) < 6) {
+            throw new Exception("A password deve ter pelo menos 6 caracteres.");
+        }
+
+        $verDao = new EmailVerificationDAO();
+        $userId = $verDao->validate($token);
+
+        if (!$userId) {
+            throw new Exception("Link inválido ou expirado (10 min). Pede um novo.");
+        }
+
+        $hash = password_hash($password, PASSWORD_DEFAULT);
+
+        // CORRIGIDO: método agora existe no UserDAO e define password + is_verified=1
+        (new UserDAO())->setPasswordAndVerify($userId, $hash);
+
+        $verDao->markUsed($token);
+
+        $_SESSION['toast'] = [
+            'type'    => 'success',
+            'message' => 'Email verificado e password definida. Já podes fazer login!'
+        ];
+        header("Location: /login");
+        exit;
+    }
+
+    public function loginApi()
+    {
+        $email    = $_POST["email"] ?? null;
+        $password = $_POST["password"] ?? null;
+
+        $user = (new UserDAO())->findByEmail($email);
+
+        if (!$user || !password_verify($password, $user->getPassword())) {
+            Utils::jsonResponse(['success' => false, 'message' => 'Login inválido', 'data' => []], 401);
+            return;
+        }
+
+        // CORRIGIDO: verificar se o email foi verificado
+        if (!$user->getIsVerified()) {
+            Utils::jsonResponse(['success' => false, 'message' => 'Conta ainda não verificada.', 'data' => []], 403);
+            return;
+        }
+
+        $payload = [
+            "iat"  => time(),
+            "exp"  => time() + 3600,
+            "data" => [
+                "id"   => $user->getId(),
+                "role" => $user->getIsAdmin()
+            ]
+        ];
+
+        $jwt = JWT::encode($payload, JwtConfig::$secret, 'HS256');
+
+        Utils::jsonResponse([
+            'success' => true,
+            'message' => 'Login realizado com sucesso',
+            'data'    => [
+                'user' => $user->toArray(),
+                'jwt'  => $jwt
+            ],
+        ], 200);
+    }
+
+    public function pedidoOracaoApi(int $userId): void
+    {
+        try {
+            $input = json_decode(file_get_contents("php://input"), true);
+            if (!is_array($input)) {
+                $input = $_POST;
+            }
+
+            $email      = trim($input["email"] ?? "");
+            $tipoPedido = trim($input["tipo_pedido"] ?? "");
+            $descricao  = trim($input["descricao"] ?? "");
+
+            if ($email === "" || $tipoPedido === "" || $descricao === "") {
+                throw new Exception("email, tipo_pedido e descricao são obrigatórios");
+            }
+
+            $createdPedido = (new PedidoOracaoDAO())->create($userId, $email, $tipoPedido, $descricao);
+
+            Utils::jsonResponse(['success' => true, 'message' => 'Pedido de oração enviado com sucesso', 'data' => ['pedido_oracao' => $createdPedido]], 201);
             exit;
 
         } catch (Exception $e) {
-
-            $pdo->rollBack();
-
-            http_response_code(400);
-
-          echo json_encode([
-    'success' => false,
-    'message' => $e->getMessage(),
-    'data' => []
-]);
+            Utils::jsonResponse(['success' => false, 'message' => $e->getMessage(), 'data' => []], 400);
             exit;
         }
     }
 
-    public function loginApi()
-  {
-    $email = $_POST["email"] ?? null;
-    $password = $_POST["password"] ?? null;
+    public function apoioSocialApi(int $userId): void
+    {
+        try {
+            $input = json_decode(file_get_contents("php://input"), true);
+            if (!is_array($input)) {
+                $input = $_POST;
+            }
 
-    $user = (new UserDAO())->findByEmail($email);
+            $local            = trim($input["local"] ?? "");
+            $codigoPostal     = trim($input["codigo_postal"] ?? "");
+            $telefone         = trim($input["telefone"] ?? "");
+            $membrosDeFamilia = $input["membros_de_familia"] ?? "";
+            $pedidoAjuda      = trim($input["pedido_ajuda"] ?? "");
 
-    if (!$user || !password_verify($password, $user->getPassword())) {
-      echo json_encode(["error" => "login inválido"]);
-      return;
+            if ($local === "" || $codigoPostal === "" || $telefone === "" || $membrosDeFamilia === "" || $pedidoAjuda === "") {
+                throw new Exception("local, codigo_postal, telefone, membros_de_familia e pedido_ajuda são obrigatórios");
+            }
+
+            $createdPedido = (new ApoioSocialDAO())->create($userId, $local, $codigoPostal, $telefone, $membrosDeFamilia, $pedidoAjuda);
+
+            Utils::jsonResponse(['success' => true, 'message' => 'Pedido de apoio social enviado com sucesso', 'data' => ['apoio_social' => $createdPedido]], 201);
+            exit;
+
+        } catch (Exception $e) {
+            Utils::jsonResponse(['success' => false, 'message' => $e->getMessage(), 'data' => []], 400);
+            exit;
+        }
     }
-
-    $payload = [
-      "iat" => time(),
-      "exp" => time() + 3600,
-      "data" => [
-        "id" => $user->getId(),
-       "role" => $user->getIsAdmin()
-      ]
-    ];
-
-    $jwt = JWT::encode($payload, JwtConfig::$secret, 'HS256');
-
-    $responseData = [
-      'success' => true,
-      'message' => 'Login realizado com sucesso',
-      'data' => [
-        'user' => $user->toArray(),
-        'jwt' => $jwt
-      ],
-    ];
-
-    Utils::jsonResponse($responseData, 200);
-  }
-
-  public function pedidoOracaoApi(int $userId): void
-  {
-    try {
-      $input = json_decode(file_get_contents("php://input"), true);
-      if (!is_array($input)) {
-        $input = $_POST;
-      }
-
-      $email = trim($input["email"] ?? "");
-      $tipoPedido = trim($input["tipo_pedido"] ?? "");
-      $descricao = trim($input["descricao"] ?? "");
-
-      if ($email === "" || $tipoPedido === "" || $descricao === "") {
-        throw new Exception("email, tipo_pedido e descricao são obrigatórios");
-      }
-
-      $createdPedido = (new PedidoOracaoDAO())->create($userId, $email, $tipoPedido, $descricao);
-
-      $responseData = [
-        'success' => true,
-        'message' => 'Pedido de oração enviado com sucesso',
-        'data' => [
-          'pedido_oracao' => $createdPedido
-        ]
-      ];
-
-      Utils::jsonResponse($responseData, 201);
-      exit;
-
-    } catch (Exception $e) {
-      $responseData = [
-        'success' => false,
-        'message' => $e->getMessage(),
-        'data' => []
-      ];
-
-      Utils::jsonResponse($responseData, 400);
-      exit;
-    }
-  }
-
-  public function apoioSocialApi(int $userId): void
-  {
-    try {
-      $input = json_decode(file_get_contents("php://input"), true);
-      if (!is_array($input)) {
-        $input = $_POST;
-      }
-
-      $local = trim($input["local"] ?? "");
-      $codigoPostal = trim($input["codigo_postal"] ?? "");
-      $telefone = trim($input["telefone"] ?? "");
-      $membrosDeFamilia = $input["membros_de_familia"] ?? "";
-      $pedidoAjuda = trim($input["pedido_ajuda"] ?? "");
-
-      if ($local === "" || $codigoPostal === "" || $telefone === "" || $membrosDeFamilia === "" || $pedidoAjuda === "") {
-        throw new Exception("local, codigo_postal, telefone, membros_de_familia e pedido_ajuda são obrigatórios");
-      }
-
-      $createdPedido = (new ApoioSocialDAO())->create($userId, $local, $codigoPostal, $telefone, $membrosDeFamilia, $pedidoAjuda);
-
-      $responseData = [
-        'success' => true,
-        'message' => 'Pedido de apoio social enviado com sucesso',
-        'data' => [
-          'apoio_social' => $createdPedido
-        ]
-      ];
-
-      Utils::jsonResponse($responseData, 201);
-      exit;
-
-    } catch (Exception $e) {
-      $responseData = [
-        'success' => false,
-        'message' => $e->getMessage(),
-        'data' => []
-      ];
-
-      Utils::jsonResponse($responseData, 400);
-      exit;
-    }
-  }
-
 }

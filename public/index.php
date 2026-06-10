@@ -66,6 +66,17 @@ elseif ($uri === '/campanhas' && $method === 'GET') {
 
 elseif ($uri === '/logout' && $method === 'POST') {
     (new AuthController())->logoutWeb();
+
+} elseif ($uri === '/verify-email' && $method === 'GET') {
+    (new AuthController())->verifyEmailForm();
+} elseif ($uri === '/verify-email' && $method === 'POST') {
+    try {
+        (new AuthController())->verifyEmailSubmit();
+    } catch (Exception $e) {
+        $_SESSION['flash_error'] = $e->getMessage();
+        header("Location: /verify-email?token=" . urlencode($_POST['token'] ?? ''));
+        exit;
+    }
 }
 
 else {
