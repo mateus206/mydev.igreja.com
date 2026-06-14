@@ -47,6 +47,66 @@ class UserController
         }
     }
 
+
+    public function updateProfileApi($userId)
+    {
+        try {
+            $raw = file_get_contents("php://input");
+            $data = json_decode($raw, true);
+
+            if (!is_array($data)) {
+                $data = $_POST;
+            }
+
+            $nome = trim($data["nome"] ?? "");
+            $telefone = trim($data["telefone"] ?? "");
+            $email = trim($data["email"] ?? "");
+
+            if (!$nome || !$email) {
+                throw new Exception("nome e email são obrigatórios");
+            }
+
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                throw new Exception("Email inválido");
+            }
+
+            $userDao = new UserDAO();
+            $user = $userDao->findById((int)$userId);
+
+            if (!$user) {
+                throw new Exception("Utilizador não encontrado");
+            }
+
+            $emailUser = $userDao->findByEmail($email);
+            if ($emailUser && $emailUser->getId() !== (int)$userId) {
+                throw new Exception("Este email já está a ser usado");
+            }
+
+            $updatedUser = $userDao->updateProfileById((int)$userId, $nome, $telefone, $email);
+
+            $dataResponse = [
+                "success" => true,
+                "message" => "Perfil atualizado com sucesso",
+                "data" => [
+                    "user" => $updatedUser->toArray()
+                ]
+            ];
+
+            Utils::jsonResponse($dataResponse);
+            exit;
+
+        } catch (Exception $e) {
+            $dataResponse = [
+                "success" => false,
+                "message" => $e->getMessage(),
+                "data" => []
+            ];
+
+            Utils::jsonResponse($dataResponse, 401);
+            exit;
+        }
+    }
+
     public function updatePasswordApi($userId)
     {
         try {

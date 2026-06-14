@@ -20,7 +20,7 @@ class UserDAO
             (string)$row["nome"],
             (string)($row["telefone"] ?? ''),
             (string)$row["email"],
-            (string)$row["data_registro"],
+            (string)$row["data_resgito"],
             (string)($row["estado"] ?? ''),
             (string)$row["password"],
             (bool)$row["is_verified"]
@@ -36,7 +36,7 @@ class UserDAO
                 nome,
                 telefone,
                 email,
-                data_registro,
+                data_resgito,
                 estado,
                 password,
                 is_verified
@@ -57,7 +57,36 @@ class UserDAO
         return $this->mapRowToUser($row);
     }
 
-    // CORRIGIDO: ordem dos parâmetros era ($nome, $email, $telefone) mas o SQL inseria ($nome, $telefone, $email)
+    public function findById(int $id): ?User
+    {
+        $sql = "
+            SELECT
+                id,
+                is_admin,
+                nome,
+                telefone,
+                email,
+                data_resgito,
+                estado,
+                password,
+                is_verified
+            FROM users
+            WHERE id = ?
+            LIMIT 1
+        ";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$id]);
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$row) {
+            return null;
+        }
+
+        return $this->mapRowToUser($row);
+    }
+
     public function createPending(string $nome, string $email, string $telefone, string $password): int
     {
         $sql = "
@@ -87,18 +116,51 @@ class UserDAO
         return (int)$this->conn->lastInsertId();
     }
 
-    // NOVO: define a password e marca o utilizador como verificado numa única query
     public function setPasswordAndVerify(int $userId, string $hashedPassword): void
     {
         $sql = "
             UPDATE users
-            SET password    = ?,
-                is_verified = 1
+            SET password = ?,
+                is_verified = 1,
+                verified_at = NOW()
             WHERE id = ?
         ";
 
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([$hashedPassword, $userId]);
+    }
+
+    public function updatePasswordById(int $id, string $hashedPassword): ?User
+    {
+        $sql = "
+            UPDATE users
+            SET password = ?,
+                updated_at = NOW()
+            WHERE id = ?
+        ";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$hashedPassword, $id]);
+
+        return $this->findById($id);
+    }
+
+
+    public function updateProfileById(int $id, string $nome, string $telefone, string $email): ?User
+    {
+        $sql = "
+            UPDATE users
+            SET nome = ?,
+                telefone = ?,
+                email = ?,
+                updated_at = NOW()
+            WHERE id = ?
+        ";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$nome, $telefone, $email, $id]);
+
+        return $this->findById($id);
     }
 
     public function getUsersCount(): int
@@ -150,7 +212,7 @@ class UserDAO
                 nome,
                 telefone,
                 email,
-                data_registro,
+                data_resgito,
                 estado,
                 password,
                 is_verified
@@ -168,65 +230,8 @@ class UserDAO
 
         return $users;
     }
-     return $this->mapRowToUser($row);
-}
-  public function getEmailVerifications($userId) {
-    $sql = "SELECT * FROM email_verifications WHERE user_id = ?";
 
-    $stmt = $this->conn->prepare($sql);
-
-    $stmt->execute([$userId]);
-
-    $emailVerifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    return $emailVerifications;
-  }
-
-  public function updatePasswordById(int $id, string $hashedPassword): ?User
-  {
-    $sql = "
-      UPDATE users
-      SET password = ?
-      WHERE id = ?
-    ";
-
-    $stmt = $this->conn->prepare($sql);
-    $stmt->execute([$hashedPassword, $id]);
-
-    return $this->findById($id);
-  }
-
-    public function findById(int $id): ?User
-    {
-        $sql = "
-            SELECT
-                id,
-                nome,
-                email,
-                password,
-                is_admin,
-                telefone,
-                data_registro,
-                estado,
-                is_verified
-            FROM users
-            WHERE id = ?
-            LIMIT 1
-        ";
-
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute([$id]);
-
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$row) {
-            return null;
-        }
-
-        return $this->mapRowToUser($row);
-    }
-
-    public function getEmailVerifications($userId)
+    public function getEmailVerifications($userId): array
     {
         $sql = "SELECT * FROM email_verifications WHERE user_id = ?";
 
@@ -234,19 +239,5 @@ class UserDAO
         $stmt->execute([$userId]);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function updatePasswordById(int $id, string $hashedPassword): ?User
-    {
-        $sql = "
-            UPDATE users
-            SET password = ?
-            WHERE id = ?
-        ";
-
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute([$hashedPassword, $id]);
-
-        return $this->findById($id);
     }
 }

@@ -40,6 +40,11 @@ if ($uri === "/login" && $method === 'POST') {
     (new UserController())->listprofileApi($tokenDecoded->data->id);
     exit;
 
+} elseif ($uri === "/users/profile" && $method === 'POST') {
+    $authUser = AuthMiddleware::check();
+    (new UserController())->updateProfileApi($authUser->getId());
+    exit;
+
 } elseif (($uri === "/AcaoSolidarias" || $uri === "/acao-solidarias") && $method === 'GET') {
     AuthMiddleware::check();
     (new AcaoSolidariascontroller())->listApi();

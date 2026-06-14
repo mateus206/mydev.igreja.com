@@ -2,28 +2,27 @@
 
 class User
 {
-    private $id;
-    private $is_admin;
-    private $nome;
-    private $telefone;
-    private $email;
-    private $data_registro;
-    private $estado;
-    private $password;
-    private $is_verified;
+    private int $id;
+    private bool $is_admin;
+    private string $nome;
+    private string $telefone;
+    private string $email;
+    private string $data_registro;
+    private string $estado;
+    private string $password;
+    private bool $is_verified;
 
     public function __construct(
-        int $id = 0,
-        bool $is_admin = false,
-        string $nome = '',
-        string $telefone = '',
-        string $email = '',
-        string $data_registro = '',
-        string $estado = '',
-        string $password = '',
-        bool $is_verified = false
-    )
-    {
+        int $id,
+        bool $is_admin,
+        string $nome,
+        string $telefone,
+        string $email,
+        string $data_registro,
+        string $estado,
+        string $password,
+        bool $is_verified
+    ) {
         $this->id = $id;
         $this->is_admin = $is_admin;
         $this->nome = $nome;
@@ -35,121 +34,62 @@ class User
         $this->is_verified = $is_verified;
     }
 
-    // GETTERS
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getIsAdmin()
+    public function getIsAdmin(): bool
     {
         return $this->is_admin;
     }
 
-    public function getNome()
+    public function getNome(): string
     {
         return $this->nome;
     }
 
-    public function getTelefone()
+    public function getTelefone(): string
     {
         return $this->telefone;
     }
 
-    public function getEmail()
+    public function getEmail(): string
     {
         return $this->email;
     }
 
-    public function getPassword()
-    {
-        return $this->password;
-    }
-
-    public function getDataRegistro()
+    public function getDataRegistro(): string
     {
         return $this->data_registro;
     }
 
-    public function getEstado()
+    public function getEstado(): string
     {
         return $this->estado;
     }
 
-    public function getIsVerified()
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    public function getIsVerified(): bool
     {
         return $this->is_verified;
     }
 
-    // SETTERS
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-
-    public function setIsAdmin($is_admin)
-    {
-        $this->is_admin = $is_admin;
-    }
-
-    public function setNome($nome)
-    {
-        $this->nome = $nome;
-    }
-
-    public function setTelefone($telefone)
-    {
-        $this->telefone = $telefone;
-    }
-
-    public function setEmail($email)
-    {
-        $this->email = $email;
-    }
-
-    public function setEstado($estado)
-    {
-        $this->estado = $estado;
-    }
-
-    public function setPassword($password)
-    {
-        $this->password = password_hash($password, PASSWORD_DEFAULT);
-    }
-
-    public function setDataRegistro($data_registro)
-    {
-        $this->data_registro = $data_registro;
-    }
-
-    public function setIsVerified($is_verified)
-    {
-        $this->is_verified = $is_verified;
-    }
-
-    public function toArray()
+    public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'is_admin' => $this->is_admin,
-            'nome' => $this->nome,
-            'telefone' => $this->telefone,
-            'email' => $this->email,
-            'data_registro' => $this->data_registro,
-            'estado' => $this->estado,
-            'is_verified' => $this->is_verified
+            "id" => $this->id,
+            "is_admin" => $this->is_admin,
+            "nome" => $this->nome,
+            "telefone" => $this->telefone,
+            "email" => $this->email,
+            "data_registro" => $this->data_registro,
+            "estado" => $this->estado,
+            "is_verified" => $this->is_verified
         ];
     }
-    public function toArray()
-{
-    return [
-        'id' => $this->id,
-        'is_admin' => $this->is_admin,
-        'nome' => $this->nome,
-        'telefone' => $this->telefone,
-        'email' => $this->email,
-        'data_resgito' => $this->data_resgito,
-        'estado' => $this->estado
-    ];
-}
 }
