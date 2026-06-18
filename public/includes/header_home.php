@@ -11,20 +11,52 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <style>
+    .sidebar-checkbox {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1040;
+    }
+
+    #sidebarToggle:checked ~ .sidebar-backdrop {
+      display: block;
+    }
+
+    #sidebarToggle:checked ~ #sidebar {
+      transform: none;
+      visibility: visible;
+    }
+
+    .hamburger-label {
+      cursor: pointer;
+    }
+  </style>
 </head>
 
 <body>
+
+  <input type="checkbox" id="sidebarToggle" class="sidebar-checkbox">
+  <label for="sidebarToggle" class="sidebar-backdrop"></label>
 
   <!-- NAVBAR -->
   <nav class="navbar navbar-dark bg-dark">
     <div class="container-fluid">
 
       <!-- HAMBURGER -->
-      <button class="btn btn-outline-light" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar">
+      <label class="btn btn-outline-light hamburger-label" for="sidebarToggle" role="button" aria-label="Abrir menu">
         <i class="fa-solid fa-bars"></i>
-      </button>
+      </label>
 
-      <a class="navbar-brand fw-bold ms-2" href="#">Igreja+</a>
+      <a class="navbar-brand fw-bold ms-2" href="/dashboard">Igreja+</a>
 
       <div class="ms-auto d-flex align-items-center gap-3">
 
@@ -62,7 +94,7 @@
 
     <div class="offcanvas-header">
       <h5 class="offcanvas-title">Painel Admin</h5>
-      <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+      <label for="sidebarToggle" class="btn-close" role="button" aria-label="Fechar menu"></label>
     </div>
 
     <div class="offcanvas-body">
@@ -77,19 +109,19 @@
           <i class="fa-solid fa-users"></i> Users
         </a>
 
-        <a href="#" class="list-group-item list-group-item-action">
+        <a href="/eventos" class="list-group-item list-group-item-action">
           <i class="fa-solid fa-calendar"></i> Eventos
         </a>
 
-        <a href="#" class="list-group-item list-group-item-action">
+        <a href="/apoio-sociais" class="list-group-item list-group-item-action">
           <i class="fa-solid fa-hand-holding-heart"></i> Apoio Social
         </a>
 
-        <a href="#" class="list-group-item list-group-item-action">
+        <a href="/pedido-oracoes" class="list-group-item list-group-item-action">
           <i class="fa-solid fa-pray"></i> Pedidos de Oração
         </a>
 
-        <a href="#" class="list-group-item list-group-item-action">
+        <a href="/acao-solidarias" class="list-group-item list-group-item-action">
           <i class="fa-solid fa-image"></i> Ação Solidária
         </a>
 

@@ -104,6 +104,45 @@ class AcaoSolidariaDAO
     return $this->mapRowToAcaoSolidaria($row);
   }
 
+
+
+  public function createFromArray(array $data): ?AcaoSolidaria
+  {
+    $acao = new AcaoSolidaria();
+    $acao->setIdUser((int)$data['id_user']);
+    $acao->setDataHoraInicio($data['data_hora_inicio']);
+    $acao->setNomeAcao(trim($data['nome_acao']));
+
+    return $this->create($acao);
+  }
+
+  public function update(int $id, array $data): bool
+  {
+    $sql = "
+      UPDATE acao_solidarias
+      SET id_user = ?,
+          data_hora_inicio = ?,
+          nome_acao = ?
+      WHERE id = ?
+    ";
+
+    $stmt = $this->conn->prepare($sql);
+
+    return $stmt->execute([
+      (int)$data['id_user'],
+      $data['data_hora_inicio'],
+      trim($data['nome_acao']),
+      $id
+    ]);
+  }
+
+  public function delete(int $id): bool
+  {
+    $sql = "DELETE FROM acao_solidarias WHERE id = ?";
+    $stmt = $this->conn->prepare($sql);
+    return $stmt->execute([$id]);
+  }
+
   private function mapRowToAcaoSolidaria(array $row): AcaoSolidaria
   {
     $acao = new AcaoSolidaria();

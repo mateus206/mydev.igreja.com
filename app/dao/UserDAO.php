@@ -240,4 +240,66 @@ class UserDAO
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function create(array $data): bool
+    {
+        $sql = "
+            INSERT INTO users (
+                is_admin,
+                nome,
+                telefone,
+                email,
+                estado,
+                password,
+                is_verified
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+        ";
+
+        $stmt = $this->conn->prepare($sql);
+
+        return $stmt->execute([
+            (int)($data['is_admin'] ?? 0),
+            trim($data['nome'] ?? ''),
+            trim($data['telefone'] ?? ''),
+            trim($data['email'] ?? ''),
+            trim($data['estado'] ?? 'ativo'),
+            password_hash($data['password'] ?? '123456', PASSWORD_DEFAULT),
+            (int)($data['is_verified'] ?? 0)
+        ]);
+    }
+
+    public function update(int $id, array $data): bool
+    {
+        $sql = "
+            UPDATE users
+            SET is_admin = ?,
+                nome = ?,
+                telefone = ?,
+                email = ?,
+                estado = ?,
+                is_verified = ?,
+                updated_at = NOW()
+            WHERE id = ?
+        ";
+
+        $stmt = $this->conn->prepare($sql);
+
+        return $stmt->execute([
+            (int)($data['is_admin'] ?? 0),
+            trim($data['nome'] ?? ''),
+            trim($data['telefone'] ?? ''),
+            trim($data['email'] ?? ''),
+            trim($data['estado'] ?? 'ativo'),
+            (int)($data['is_verified'] ?? 0),
+            $id
+        ]);
+    }
+
+    public function delete(int $id): bool
+    {
+        $sql = "UPDATE users SET deleted_at = NOW() WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute([$id]);
+    }
+
 }

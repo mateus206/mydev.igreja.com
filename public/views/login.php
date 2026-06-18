@@ -82,18 +82,13 @@
 
     </div>
 
-  <!-- Antes do </body> -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
- 
-    <script>
-        const toast = <?= json_encode($_SESSION["toast"] ?? null) ?>;
-        <?php unset($_SESSION['toast']); ?>
-        if (toast) {
-            toastr[toast.type](toast.message);
-        }
-    </script>
- 
+    <?php if (!empty($_SESSION["toast"])): ?>
+        <div class="alert alert-<?= $_SESSION["toast"]["type"] === "success" ? "success" : "danger" ?> mt-3" role="alert">
+            <?= $_SESSION["toast"]["message"] ?>
+        </div>
+        <?php unset($_SESSION["toast"]); ?>
+    <?php endif; ?>
+
 </body>
  
 </html>

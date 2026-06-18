@@ -181,7 +181,7 @@ $token = $token ?? '';
       <form method="post" action="/verify-email">
 
         <!-- token oculto vindo do link de email -->
-        <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
+        <input type="hidden" name="token" value="<?= $token ?>">
 
         <!-- CORRIGIDO: campo de password (era "code" mas o controller lia "password") -->
         <div class="field">
@@ -191,7 +191,7 @@ $token = $token ?? '';
 
         <div class="field">
           <label>Confirmar password</label>
-          <input type="password" id="confirmPassword" placeholder="Repete a password" required>
+          <input type="password" name="confirm_password" id="confirmPassword" placeholder="Repete a password" required>
         </div>
 
         <button type="submit">Ativar conta</button>
@@ -208,29 +208,12 @@ $token = $token ?? '';
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-
-  <script>
-    // Mostrar toast vindo da sessão (erros de verifyEmailSubmit)
-    const toast = <?= json_encode($_SESSION['toast'] ?? null) ?>;
+  <?php if (!empty($_SESSION['toast'])): ?>
+    <div class="alert alert-<?= $_SESSION['toast']['type'] === 'success' ? 'success' : 'danger' ?>" role="alert">
+      <?= $_SESSION['toast']['message'] ?>
+    </div>
     <?php unset($_SESSION['toast']); ?>
-
-    if (toast) {
-      toastr[toast.type](toast.message);
-    }
-
-    // Validação client-side: confirmar que as passwords coincidem
-    document.querySelector('form').addEventListener('submit', function (e) {
-      const pw  = document.querySelector('input[name="password"]').value;
-      const cpw = document.getElementById('confirmPassword').value;
-
-      if (pw !== cpw) {
-        e.preventDefault();
-        toastr.error('As passwords não coincidem.');
-      }
-    });
-  </script>
+  <?php endif; ?>
 
 </body>
 </html>

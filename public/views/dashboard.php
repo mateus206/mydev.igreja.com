@@ -16,10 +16,10 @@
         </p>
       </div>
 
-      <button class="btn btn-primary">
+      <a href="/eventos" class="btn btn-primary">
         <i class="bi bi-plus-lg"></i>
         Novo Evento
-      </button>
+      </a>
 
     </div>
 
@@ -70,9 +70,9 @@
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Últimos Membros</h5>
 
-        <button class="btn btn-sm btn-outline-primary">
+        <a href="/users" class="btn btn-sm btn-outline-primary">
           Ver Todos
-        </button>
+        </a>
       </div>
 
       <div class="card-body p-0">

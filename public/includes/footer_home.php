@@ -20,18 +20,18 @@
 
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-
-<script>
-  const toast = <?= json_encode($_SESSION["toast"] ?? null) ?>;
+<?php if (!empty($_SESSION['toast'])): ?>
+  <div class="container-fluid fixed-top mt-3" style="pointer-events: none;">
+    <div class="row justify-content-end">
+      <div class="col-md-4">
+        <div class="alert alert-<?= $_SESSION['toast']['type'] === 'success' ? 'success' : 'danger' ?> shadow" role="alert">
+          <?= $_SESSION['toast']['message'] ?>
+        </div>
+      </div>
+    </div>
+  </div>
   <?php unset($_SESSION['toast']); ?>
-
-  if (toast) {
-    toastr[toast.type](toast.message);
-  }
-</script>
+<?php endif; ?>
 
 </body>
 </html>

@@ -64,6 +64,12 @@ class User
         return $this->data_registro;
     }
 
+    // Compatibilidade com a coluna antiga usada no projeto: data_resgito
+    public function getDataResgito(): string
+    {
+        return $this->data_registro;
+    }
+
     public function getEstado(): string
     {
         return $this->estado;

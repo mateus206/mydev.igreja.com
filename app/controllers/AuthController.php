@@ -78,30 +78,30 @@ class AuthController
             exit;
         }
 
-        // CORRIGIDO: verificar se o email foi verificado antes de permitir login
-        if (!$user->getIsVerified()) {
-            $_SESSION['toast'] = ['type' => 'error', 'message' => 'Conta ainda não verificada. Verifica o teu email.'];
-            header("Location: /login");
-            exit;
-        }
-
-        if (password_verify($password, $user->getPassword())) {
-            $_SESSION['token'] = [
-                'id'       => $user->getId(),
-                'username' => $user->getNome(),
-                'email'    => $user->getEmail(),
-                'is_admin' => $user->getIsAdmin()
-            ];
-
-            $_SESSION['toast'] = ['type' => 'success', 'message' => "Bem-vindo de volta, " . $user->getNome() . "!"];
-            header("Location: /dashboard");
-            exit;
-
-        } else {
+        if (!password_verify($password, $user->getPassword())) {
             $_SESSION['toast'] = ['type' => 'error', 'message' => "Dados de login inválidos"];
             header("Location: /login");
             exit;
         }
+
+        // No login do site/painel, a conta não precisa estar verificada.
+        // Só é necessário confirmar que é administrador.
+        if (!$user->getIsAdmin()) {
+            $_SESSION['toast'] = ['type' => 'error', 'message' => 'Apenas administradores podem fazer login neste painel.'];
+            header("Location: /login");
+            exit;
+        }
+
+        $_SESSION['token'] = [
+            'id'       => $user->getId(),
+            'username' => $user->getNome(),
+            'email'    => $user->getEmail(),
+            'is_admin' => $user->getIsAdmin()
+        ];
+
+        $_SESSION['toast'] = ['type' => 'success', 'message' => "Bem-vindo de volta, " . $user->getNome() . "!"];
+        header("Location: /dashboard");
+        exit;
     }
 
     public function logoutWeb()
@@ -154,7 +154,7 @@ class AuthController
             $subject = "Verifica o teu email (expira em 10 min)";
             $html = "
                 <div style='font-family: Arial, sans-serif;'>
-                    <h2>Olá, " . htmlspecialchars($nome) . "!</h2>
+                    <h2>Olá, " . $nome . "!</h2>
                     <p>Para ativares a tua conta e definires a tua password, clica no link abaixo (válido por <b>10 minutos</b>):</p>
                     <p><a href='{$link}'>{$link}</a></p>
                     <p>Se o link expirar, faz signup novamente (ou pede reenvio do link).</p>
@@ -195,9 +195,14 @@ class AuthController
 
         $token    = (string)($_POST['token'] ?? '');
         $password = (string)($_POST['password'] ?? '');
+        $confirmPassword = (string)($_POST['confirm_password'] ?? '');
 
         if ($token === '' || $password === '') {
             throw new Exception("Token e password são obrigatórios.");
+        }
+
+        if ($password !== $confirmPassword) {
+            throw new Exception("As passwords não coincidem.");
         }
 
         if (strlen($password) < 6) {

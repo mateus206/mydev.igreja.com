@@ -98,6 +98,48 @@ class EventoDAO
     return $this->mapRowToEvento($row);
   }
 
+
+
+  public function createFromArray(array $data): ?Evento
+  {
+    $evento = new Evento();
+    $evento->setIdUsers((int)$data['id_users']);
+    $evento->setDataHoraInicio($data['data_hora_inicio']);
+    $evento->setNomeEvento(trim($data['nome_evento']));
+    $evento->setTipoEvento(trim($data['tipo_evento']));
+
+    return $this->create($evento);
+  }
+
+  public function update(int $id, array $data): bool
+  {
+    $sql = "
+      UPDATE eventos
+      SET id_users = ?,
+          data_hora_inicio = ?,
+          nome_evento = ?,
+          tipo_evento = ?
+      WHERE id = ?
+    ";
+
+    $stmt = $this->conn->prepare($sql);
+
+    return $stmt->execute([
+      (int)$data['id_users'],
+      $data['data_hora_inicio'],
+      trim($data['nome_evento']),
+      trim($data['tipo_evento']),
+      $id
+    ]);
+  }
+
+  public function delete(int $id): bool
+  {
+    $sql = "DELETE FROM eventos WHERE id = ?";
+    $stmt = $this->conn->prepare($sql);
+    return $stmt->execute([$id]);
+  }
+
   private function mapRowToEvento(array $row): Evento
   {
     $evento = new Evento();
