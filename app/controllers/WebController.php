@@ -5,6 +5,9 @@ require_once __DIR__ . '/../dao/eventosDAO.php';
 require_once __DIR__ . '/../dao/ApoioSocialDAO.php';
 require_once __DIR__ . '/../dao/PedidoOracaoDAO.php';
 require_once __DIR__ . '/../dao/acaosolidariasDAO.php';
+require_once __DIR__ . '/../dao/ContribuicaoDAO.php';
+require_once __DIR__ . '/../dao/MinisterioInscricaoDAO.php';
+require_once __DIR__ . '/../dao/NotificacaoDAO.php';
 
 class WebController
 {
@@ -44,12 +47,18 @@ class WebController
         $eventCount = (new UserDAO())->getEventCount();
         $apoioSocialCount = (new UserDAO())->getApoioSocialCount();
         $pedidosOracaoCount = (new UserDAO())->getPedidosOracaoCount();
+        $contribuicaoCount = (new ContribuicaoDAO())->countAll();
+        $ministerioCount = (new MinisterioInscricaoDAO())->countAll();
+        $notificacaoCount = (new NotificacaoDAO())->countAll();
 
         $this->view('dashboard', [
             'userCount' => $userCount,
             'eventCount' => $eventCount,
             'apoioSocialCount' => $apoioSocialCount,
-            'pedidosOracaoCount' => $pedidosOracaoCount
+            'pedidosOracaoCount' => $pedidosOracaoCount,
+            'contribuicaoCount' => $contribuicaoCount,
+            'ministerioCount' => $ministerioCount,
+            'notificacaoCount' => $notificacaoCount
         ]);
     }
 
@@ -355,6 +364,166 @@ class WebController
         }
 
         $this->redirect('/acao-solidarias');
+    }
+
+
+    public function contribuicoes()
+    {
+        $contribuicoes = (new ContribuicaoDAO())->findAll();
+        $users = (new UserDAO())->getUsers();
+        $this->view('contribuicoes', ['contribuicoes' => $contribuicoes, 'users' => $users]);
+    }
+
+    public function editContribuicao()
+    {
+        $id = (int)($_GET['id'] ?? 0);
+        $editContribuicao = (new ContribuicaoDAO())->findById($id);
+        if (!$editContribuicao) {
+            $this->toast('error', 'Contribuição não encontrada.');
+            $this->redirect('/contribuicoes');
+        }
+        $contribuicoes = (new ContribuicaoDAO())->findAll();
+        $users = (new UserDAO())->getUsers();
+        $this->view('contribuicoes', ['contribuicoes' => $contribuicoes, 'users' => $users, 'editContribuicao' => $editContribuicao]);
+    }
+
+    public function storeContribuicao()
+    {
+        try {
+            (new ContribuicaoDAO())->createFromArray($_POST);
+            $this->toast('success', 'Contribuição criada com sucesso.');
+        } catch (Exception $e) {
+            $this->toast('error', 'Erro ao criar contribuição: ' . $e->getMessage());
+        }
+        $this->redirect('/contribuicoes');
+    }
+
+    public function updateContribuicao()
+    {
+        try {
+            (new ContribuicaoDAO())->update((int)$_POST['id'], $_POST);
+            $this->toast('success', 'Contribuição atualizada com sucesso.');
+        } catch (Exception $e) {
+            $this->toast('error', 'Erro ao atualizar contribuição: ' . $e->getMessage());
+        }
+        $this->redirect('/contribuicoes');
+    }
+
+    public function deleteContribuicao()
+    {
+        try {
+            (new ContribuicaoDAO())->delete((int)$_POST['id']);
+            $this->toast('success', 'Contribuição apagada com sucesso.');
+        } catch (Exception $e) {
+            $this->toast('error', 'Erro ao apagar contribuição: ' . $e->getMessage());
+        }
+        $this->redirect('/contribuicoes');
+    }
+
+    public function ministeriosInscricoes()
+    {
+        $inscricoes = (new MinisterioInscricaoDAO())->findAll();
+        $users = (new UserDAO())->getUsers();
+        $this->view('ministerios_inscricoes', ['inscricoes' => $inscricoes, 'users' => $users]);
+    }
+
+    public function editMinisterioInscricao()
+    {
+        $id = (int)($_GET['id'] ?? 0);
+        $editInscricao = (new MinisterioInscricaoDAO())->findById($id);
+        if (!$editInscricao) {
+            $this->toast('error', 'Inscrição não encontrada.');
+            $this->redirect('/ministerios-inscricoes');
+        }
+        $inscricoes = (new MinisterioInscricaoDAO())->findAll();
+        $users = (new UserDAO())->getUsers();
+        $this->view('ministerios_inscricoes', ['inscricoes' => $inscricoes, 'users' => $users, 'editInscricao' => $editInscricao]);
+    }
+
+    public function storeMinisterioInscricao()
+    {
+        try {
+            (new MinisterioInscricaoDAO())->createFromArray($_POST);
+            $this->toast('success', 'Inscrição criada com sucesso.');
+        } catch (Exception $e) {
+            $this->toast('error', 'Erro ao criar inscrição: ' . $e->getMessage());
+        }
+        $this->redirect('/ministerios-inscricoes');
+    }
+
+    public function updateMinisterioInscricao()
+    {
+        try {
+            (new MinisterioInscricaoDAO())->update((int)$_POST['id'], $_POST);
+            $this->toast('success', 'Inscrição atualizada com sucesso.');
+        } catch (Exception $e) {
+            $this->toast('error', 'Erro ao atualizar inscrição: ' . $e->getMessage());
+        }
+        $this->redirect('/ministerios-inscricoes');
+    }
+
+    public function deleteMinisterioInscricao()
+    {
+        try {
+            (new MinisterioInscricaoDAO())->delete((int)$_POST['id']);
+            $this->toast('success', 'Inscrição apagada com sucesso.');
+        } catch (Exception $e) {
+            $this->toast('error', 'Erro ao apagar inscrição: ' . $e->getMessage());
+        }
+        $this->redirect('/ministerios-inscricoes');
+    }
+
+    public function notificacoes()
+    {
+        $notificacoes = (new NotificacaoDAO())->findAll();
+        $users = (new UserDAO())->getUsers();
+        $this->view('notificacoes', ['notificacoes' => $notificacoes, 'users' => $users]);
+    }
+
+    public function editNotificacao()
+    {
+        $id = (int)($_GET['id'] ?? 0);
+        $editNotificacao = (new NotificacaoDAO())->findById($id);
+        if (!$editNotificacao) {
+            $this->toast('error', 'Notificação não encontrada.');
+            $this->redirect('/notificacoes');
+        }
+        $notificacoes = (new NotificacaoDAO())->findAll();
+        $users = (new UserDAO())->getUsers();
+        $this->view('notificacoes', ['notificacoes' => $notificacoes, 'users' => $users, 'editNotificacao' => $editNotificacao]);
+    }
+
+    public function storeNotificacao()
+    {
+        try {
+            (new NotificacaoDAO())->createFromArray($_POST);
+            $this->toast('success', 'Notificação criada com sucesso.');
+        } catch (Exception $e) {
+            $this->toast('error', 'Erro ao criar notificação: ' . $e->getMessage());
+        }
+        $this->redirect('/notificacoes');
+    }
+
+    public function updateNotificacao()
+    {
+        try {
+            (new NotificacaoDAO())->update((int)$_POST['id'], $_POST);
+            $this->toast('success', 'Notificação atualizada com sucesso.');
+        } catch (Exception $e) {
+            $this->toast('error', 'Erro ao atualizar notificação: ' . $e->getMessage());
+        }
+        $this->redirect('/notificacoes');
+    }
+
+    public function deleteNotificacao()
+    {
+        try {
+            (new NotificacaoDAO())->delete((int)$_POST['id']);
+            $this->toast('success', 'Notificação apagada com sucesso.');
+        } catch (Exception $e) {
+            $this->toast('error', 'Erro ao apagar notificação: ' . $e->getMessage());
+        }
+        $this->redirect('/notificacoes');
     }
 
     public function campanhas()

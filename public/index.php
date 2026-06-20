@@ -174,6 +174,70 @@ elseif ($uri === '/acao-solidarias/delete' && $method === 'POST') {
     (new WebController())->deleteAcaoSolidaria();
 }
 
+
+elseif ($uri === '/contribuicoes' && $method === 'GET') {
+    requireLogin();
+    (new WebController())->contribuicoes();
+}
+elseif ($uri === '/contribuicoes/edit' && $method === 'GET') {
+    requireLogin();
+    (new WebController())->editContribuicao();
+}
+elseif ($uri === '/contribuicoes/store' && $method === 'POST') {
+    requireLogin();
+    (new WebController())->storeContribuicao();
+}
+elseif ($uri === '/contribuicoes/update' && $method === 'POST') {
+    requireLogin();
+    (new WebController())->updateContribuicao();
+}
+elseif ($uri === '/contribuicoes/delete' && $method === 'POST') {
+    requireLogin();
+    (new WebController())->deleteContribuicao();
+}
+
+elseif ($uri === '/ministerios-inscricoes' && $method === 'GET') {
+    requireLogin();
+    (new WebController())->ministeriosInscricoes();
+}
+elseif ($uri === '/ministerios-inscricoes/edit' && $method === 'GET') {
+    requireLogin();
+    (new WebController())->editMinisterioInscricao();
+}
+elseif ($uri === '/ministerios-inscricoes/store' && $method === 'POST') {
+    requireLogin();
+    (new WebController())->storeMinisterioInscricao();
+}
+elseif ($uri === '/ministerios-inscricoes/update' && $method === 'POST') {
+    requireLogin();
+    (new WebController())->updateMinisterioInscricao();
+}
+elseif ($uri === '/ministerios-inscricoes/delete' && $method === 'POST') {
+    requireLogin();
+    (new WebController())->deleteMinisterioInscricao();
+}
+
+elseif ($uri === '/notificacoes' && $method === 'GET') {
+    requireLogin();
+    (new WebController())->notificacoes();
+}
+elseif ($uri === '/notificacoes/edit' && $method === 'GET') {
+    requireLogin();
+    (new WebController())->editNotificacao();
+}
+elseif ($uri === '/notificacoes/store' && $method === 'POST') {
+    requireLogin();
+    (new WebController())->storeNotificacao();
+}
+elseif ($uri === '/notificacoes/update' && $method === 'POST') {
+    requireLogin();
+    (new WebController())->updateNotificacao();
+}
+elseif ($uri === '/notificacoes/delete' && $method === 'POST') {
+    requireLogin();
+    (new WebController())->deleteNotificacao();
+}
+
 elseif ($uri === '/campanhas' && $method === 'GET') {
     requireLogin();
     (new WebController())->campanhas();

@@ -20,7 +20,7 @@ class UserDAO
             (string)$row["nome"],
             (string)($row["telefone"] ?? ''),
             (string)$row["email"],
-            (string)$row["data_resgito"],
+            (string)$row["data_registro"],
             (string)($row["estado"] ?? ''),
             (string)$row["password"],
             (bool)$row["is_verified"]
@@ -36,7 +36,7 @@ class UserDAO
                 nome,
                 telefone,
                 email,
-                data_resgito,
+                data_registro,
                 estado,
                 password,
                 is_verified
@@ -66,7 +66,7 @@ class UserDAO
                 nome,
                 telefone,
                 email,
-                data_resgito,
+                data_registro,
                 estado,
                 password,
                 is_verified
@@ -212,7 +212,7 @@ class UserDAO
                 nome,
                 telefone,
                 email,
-                data_resgito,
+                data_registro,
                 estado,
                 password,
                 is_verified

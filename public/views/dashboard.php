@@ -26,7 +26,7 @@
     <!-- CARDS -->
     <div class="row g-3 mb-4">
 
-      <div class="col-md-3">
+      <div class="col-md-3 col-lg-2">
         <div class="card">
           <div class="card-body">
             <h6 class="text-muted">Total de Users</h6>
@@ -35,7 +35,7 @@
         </div>
       </div>
 
-      <div class="col-md-3">
+      <div class="col-md-3 col-lg-2">
         <div class="card">
           <div class="card-body">
             <h6 class="text-muted">Eventos</h6>
@@ -44,7 +44,7 @@
         </div>
       </div>
 
-      <div class="col-md-3">
+      <div class="col-md-3 col-lg-2">
         <div class="card">
           <div class="card-body">
             <h6 class="text-muted">Apoio Social</h6>
@@ -53,11 +53,38 @@
         </div>
       </div>
 
-      <div class="col-md-3">
+      <div class="col-md-3 col-lg-2">
         <div class="card">
           <div class="card-body">
             <h6 class="text-muted">Pedidos de Oração</h6>
             <h2><?= $pedidosOracaoCount ?></h2>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3 col-lg-2">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="text-muted">Contribuições</h6>
+            <h2><?= $contribuicaoCount ?? 0 ?></h2>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3 col-lg-2">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="text-muted">Ministérios</h6>
+            <h2><?= $ministerioCount ?? 0 ?></h2>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3 col-lg-2">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="text-muted">Notificações</h6>
+            <h2><?= $notificacaoCount ?? 0 ?></h2>
           </div>
         </div>
       </div>

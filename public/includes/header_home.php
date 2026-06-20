@@ -125,6 +125,18 @@
           <i class="fa-solid fa-image"></i> Ação Solidária
         </a>
 
+        <a href="/notificacoes" class="list-group-item list-group-item-action">
+          <i class="fa-solid fa-bell"></i> Notificações
+        </a>
+
+        <a href="/contribuicoes" class="list-group-item list-group-item-action">
+          <i class="fa-solid fa-hand-holding-dollar"></i> Dízimos e Ofertas
+        </a>
+
+        <a href="/ministerios-inscricoes" class="list-group-item list-group-item-action">
+          <i class="fa-solid fa-people-group"></i> Ministérios
+        </a>
+
       </div>
 
       <form action="/logout" method="POST" class="mt-4">
